@@ -1,70 +1,169 @@
-# Getting Started with Create React App
+# 2021_react-masterclass
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Our First Styled Component
 
-## Available Scripts
+- In order to create a styled component, you need to 
+1. import styled component on your react.js
+2. created styled.{whatever jsx compoennt you like}.
+3. style that component. 
 
-In the project directory, you can run:
 
-### `npm start`
+# Adapting and Extending
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Learn how to make component configurable and extendible. 
+- if you want to make the background color to be configurable, we use props to send component.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```js
 
-### `npm test`
+// we can send these properties over to the <Box> component from App() function.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+const box = styled.div`
+    background-color: ${(props)=> props.bgColor};
+    width: 100px;
+    height: 100px;
 
-### `npm run build`
+`;
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+function App() {
+    return (
+        <Father>
+            <Box bgColor="teal" />
+            <Box bgColor="tomato" />
+        </Father>
+    )
+}
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- you need to extend to minimize the copy and pasting of components that are similar. 
 
-### `npm run eject`
+```js
+const box = styled.div`
+    background-color: ${(props)=> props.bgColor};
+    width: 100px;
+    height: 100px;
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+`;
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+// in order for us to extend to box to Circle, we have to use below styled()
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+const Circle = styled(Box)`
+    border-radius: 50px;
+`;
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-## Learn More
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+# 2.3 'As and Attr'
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- If you do not want a button tag
 
-### Code Splitting
+```js
+const FAther = styled.div`
+    display: flex;
+`;
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+const Btn = styled.button`
+    color:white;
+    background-color: tomato;
+    border:0;
+    border-radius:15px;
+`;
 
-### Analyzing the Bundle Size
+const Link = styled(Btn);
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+function App() {
+    return <Father>
+        <Btn>Log in</Btn>
+        <Btn as="a" href="/">Log in</Btn>
+    </Father>;
+}
 
-### Making a Progressive Web App
+```
+- you can change the component with as-a as above. 
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```js
+const Input = styled.input.attrs({required:true})`
+    background-color: tomato;
+`;
 
-### Advanced Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+// The attribute of of required is cluded in all Input components
+function App() {
+    return (
+        <Father as="header">
+            <Input />
+            <Input />
+            <Input />
+            <Input />
+            <Input />
+        </Father>
+    )
+}
 
-### Deployment
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+# 2.4 Animations and Pseudo Selectors
 
-### `npm run build` fails to minify
+- We import helper {key} to create animations. 
+- 
+```js
+const animation = keyframes`
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+`;
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+const Box = styled.div`
+
+`;
+
+- 
+
+```js
+import styled, { keyframes } from "styled-components";
+
+const Wrapper = styled.div`
+  display: flex;
+`;
+
+const rotationAnimation = keyframes`
+  0% {
+    transform:rotate(0deg);
+    border-radius:0px;
+  }
+  50% {
+    border-radius:100px;
+  }
+  100%{
+    transform:rotate(360deg);
+    border-radius:0px;
+  }
+`;
+
+const Box = styled.div`
+  height: 200px;
+  width: 200px;
+  background-color: tomato;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: ${rotationAnimation} 1s linear infinite;
+  // you can use span:hover as span:&
+  span {
+    font-size: 36px;
+    &:hover {
+      font-size: 48px;
+    }
+    &:active {
+      opacity: 0;
+    }
+  }
+```
+
+# 2.7 Themes
+
+- Themes is 
