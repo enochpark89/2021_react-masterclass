@@ -332,3 +332,383 @@ const Container = styled.div<CircleProps>`
   border-radius: 100px;
 `;
 ```
+
+# 3.3 Optional Props
+
+- Add a border color to the circle. 
+- If you want to make the optional prop, you just need to put a question mark(?) after
+
+Summary:
+1. App will send two arguments called borderColor and bgColor.
+2. Circle will receive the props and make sure that it follows the CircleProps checking required props. 
+3. Circle function will send two props into the container.
+  - You set the optional props by coding below
+```js
+<Container bgColor={bgColor} borderColor={borderColor ?? bgColor}>{text}
+</Container>
+```
+# 3.4 State
+
+- you can use useState to set the current state or variable. 
+```js
+// Set the current state of 1; counter is the current state; setCounter is what user uses to set the new state.
+const [counter, setCounter] = useState(1)
+// set a new counter by using setCounter.
+setCounter(2)
+```
+- Case 1: when the type is decalred on the useState it will remain the same and typescirpt will expect the same type throughout the page. 
+```js
+// this will give an error because setValue would expect a boolean.
+const [value, setValue] = useState(true);
+setValue(2);
+// If you want to avoid an error, you can set either or as below
+const [value, setValue] = useState<number|string>(0);
+setValue(2);
+```
+# 3.5 Form
+
+- Implement a form using Typescript. 
+- 
+```tsx
+import React, { useState } from "react";
+
+function App() {
+  const [value, setValue] = useState("");
+
+// onChange event created
+  const onChange = (event: React.FormEvent<HTMLInputElement>) => {
+    // event.value is called.
+    const {
+      currentTarget: { value },
+    } = event;
+    //event.value is called value; value used on setValue to set a new state.
+    setValue(value);
+  };
+
+  // onSubmit event is created. 
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    // once submitted, event will preventDefault() - refresh and it will print the current value along with "hello" string.
+    event.preventDefault();
+    console.log("hello", value);
+  };
+  return (
+    <div>
+      <form onSubmit={onSubmit}>
+        <input
+          value={value}
+          onChange={onChange}
+          type="text"
+          placeholder="username"
+        />
+        <button>Log in</button>
+      </form>
+    </div>
+  );
+}
+export default App;
+
+```
+# 3.6 Theme
+
+- We saw themes and it is cool because it allows you to toggle between the dark mode and the light mode. 
+- We installed a type definition which is the file that explain to typescript about the styled-components and other packages. 
+Steps to install typescript
+URL:
+https://styled-components.com/docs/api#typescript
+
+
+1. Install a type defintion
+- explain to typescript what is the styled component. 
+2. Create a declaration file. 
+- it finishes in d.ts.
+- one that is in the github also finish it. It is in github so you can download. 
+- we need to extend and add in little code. 
+- create a file called src/styled.d.ts
+  a. copy paste what is in the styled-component-typescript link above.
+  b. set the shape of your theme. 
+```ts
+import "styled-components";
+
+// declare a module and create in interface called DefaultTheme.
+declare module "styled-components" {
+  export interface DefaultTheme {
+    textColor: string;
+    bgColor: string;
+    btnColor: string;
+  }
+}
+```
+- create theme.ts; create light and dark theme.
+```ts
+// import DefaultTheme from styled.d.ts
+import { DefaultTheme } from "styled-components";
+
+// Create light and dark themes.
+export const lightTheme: DefaultTheme = {
+  bgColor: "white",
+  textColor: "black",
+  btnColor: "tomato",
+};
+
+export const darkTheme: DefaultTheme = {
+  bgColor: "black",
+  textColor: "white",
+  btnColor: "teal",
+};
+```
+- import both style.d.ts and theme.ts from index.tsx and utilize the exports.
+index.tsx
+```ts
+import React from "react";
+import ReactDOM from "react-dom";
+import { ThemeProvider } from "styled-components";
+import App from "./App";
+import { darkTheme, lightTheme } from "./theme";
+
+ReactDOM.render(
+  <React.StrictMode>
+    <ThemeProvider theme={darkTheme}>
+      <App />
+    </ThemeProvider>
+  </React.StrictMode>,
+  document.getElementById("root")
+);
+```
+
+# 3.7 Recap:
+
+- Introduction to TypeScript.
+1. Difference between TypeScript and JavaScript
+- TypeScript is like a superset of JavaScript. 
+- In order to specify the type of anything, we have to set the type for each value and what it will return. 
+- SyntheticEvent - React version of event. 
+  - There are list of events that you can look up
+  - You can use form event. 
+- sometimes, you are going to download that you do not have the typescript declaration or explanation.
+- most of the time, if you are using a popular library, it will be in the repository called DefinitelyTyped. 
+- another way of installing is using npm install --save-dev @types/<name of the pacakage>
+
+# 4.0 Create Coin tracking API
+
+- Create a coin tracking that shows many new information about the crypto currency.
+
+- You can use *react query* to fetch the data. 
+
+- First, create in a regular way and second, you have to know what problems were addressed in react query. 
+
+- Install react router dom
+
+```
+npm i react-router-dom react-query
+```
+
+*Please install @5.2 react-dom because otherwise, it wouldn't work.*
+
+- UseParam will allow you to grab the related name in URL. 
+
+# 4.1 Styles
+
+- Since there are some default sytles in REact, we want to get rid of things and start from 0 because otherwise, we have to cope with different default styles. 
+
+- You can use import styled-reset.
+- It is same as using reset style. 
+
+```js
+function App() {
+  return (
+    <>
+      <GlobalStyle />
+      <Router />
+    </>
+  );
+}
+```
+- createGlobalStyle will apply the style to the whole program. 
+
+- React team released something called fragment <> which is the ghost appearance that is not doing any styles. 
+
+- you can set the global font style.
+- you can look up the Google font for help since they have nice style options. 
+
+- you can write a theme from the flatuicolors.com - choose a pallete. 
+- Change btn to AccentColor. 
+- 
+
+- Two things that I need to know how to do. 
+  1. Import a globalstyle and reset css.
+  2. Set the globalfont. 
+
+# 4.2 Home - Pt1
+
+- Set up the Home page with Coins details
+
+Coins.tsx
+```ts
+
+```
+- you can use the cryptocurrency website to create a API that presents the general imformation and put it on the project. 
+
+
+# 4.3 Home part Two 
+
+- fetch the data from the actual API.
+- CoinPaprica 
+- added max-width and margin and the margin will act like a mobile app. 
+
+- In order to bring the data, you have to add the interface of the data. 
+
+```js
+interface CoinInterface {
+  id: string;
+  name: string;
+  symbol: string;
+  rank: number;
+  is_new: boolean;
+  is_active: boolean;
+  type: string;
+}
+```
+
+- Run code in a certain period of time = useEffect() - start or end 
+
+- import UseEffect() so that it would only run in the beginning of the Coins API fetch
+```js
+function Coins() {
+  const [coins, setCoins] = useState<CoinInterface[]>([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    (async () => {
+      const response = await fetch("https://api.coinpaprika.com/v1/coins");
+      const json = await response.json();
+      setCoins(json.slice(0, 100));
+      setLoading(false);
+    })();
+  }, []);
+```
+
+- The cool trick to execute it immediately.
+
+```js
+ useEffect(() => {
+   // this part is executed immediately.
+    (async () => {
+      const response = await fetch("https://api.coinpaprika.com/v1/coins");
+      const json = await response.json();
+      setCoins(json.slice(0, 100));
+      setLoading(false);
+    })();
+  }, []);
+```
+
+- Usually, it grabs 9000 coins but you are only going to take 100. 
+```
+a.slice(0,5) - cut the array.
+```
+
+- Create a loading state
+```js
+  const [loading, setLoading] = useState(true);
+  ......
+   {loading ? (
+        <Loader>Loading...</Loader>
+      ) : (
+        <CoinsList>
+          {coins.map((coin) => (
+            <Coin key={coin.id}>
+              <Link to={`/${coin.id}`}>{coin.name} &rarr;</Link>
+            </Coin>
+          ))}
+        </CoinsList>
+      )}
+```
+
+Final
+
+Coins.tsx
+```js
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import styled from "styled-components";
+
+const Container = styled.div`
+  padding: 0px 20px;
+  max-width: 480px;
+  margin: 0 auto;
+`;
+
+const Header = styled.header`
+  height: 15vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const CoinsList = styled.ul``;
+const Coin = styled.li`
+  background-color: white;
+  color: ${(props) => props.theme.bgColor};
+  border-radius: 15px;
+  margin-bottom: 10px;
+  a {
+    padding: 20px;
+    transition: color 0.2s ease-in;
+    display: block;
+  }
+  &:hover {
+    a {
+      color: ${(props) => props.theme.accentColor};
+    }
+  }
+`;
+const Title = styled.h1`
+  font-size: 48px;
+  color: ${(props) => props.theme.accentColor};
+`;
+
+const Loader = styled.span`
+  text-align: center;
+  display: block;
+`;
+
+interface CoinInterface {
+  id: string;
+  name: string;
+  symbol: string;
+  rank: number;
+  is_new: boolean;
+  is_active: boolean;
+  type: string;
+}
+
+function Coins() {
+  const [coins, setCoins] = useState<CoinInterface[]>([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    (async () => {
+      const response = await fetch("https://api.coinpaprika.com/v1/coins");
+      const json = await response.json();
+      setCoins(json.slice(0, 100));
+      setLoading(false);
+    })();
+  }, []);
+  return (
+    <Container>
+      <Header>
+        <Title>코인</Title>
+      </Header>
+      {loading ? (
+        <Loader>Loading...</Loader>
+      ) : (
+        <CoinsList>
+          {coins.map((coin) => (
+            <Coin key={coin.id}>
+              <Link to={`/${coin.id}`}>{coin.name} &rarr;</Link>
+            </Coin>
+          ))}
+        </CoinsList>
+      )}
+    </Container>
+  );
+}
+export default Coins;
+```
+
