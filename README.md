@@ -712,3 +712,522 @@ function Coins() {
 export default Coins;
 ```
 
+# 4.4 Route States
+- use crypto icon to create get an icon to the coin detail. 
+
+- in the Coins.tsx, you add an image. 
+```js
+<Link
+  to={{
+    pathname: `/${coin.id}`,
+    state: { name: coin.name },
+  }}
+>
+  <Img
+    src={`https://cryptoicon-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`}
+  />
+  {coin.name} &rarr;
+</Link>
+```
+
+- you can useLocation() hook to get the current state
+  - location gets the key, pathname, search and states. 
+
+- grab the state and get the name
+
+Coin.tsx
+```js
+}
+interface RouteState {
+  name: string;
+}
+function Coin() {
+  const [loading, setLoading] = useState(true);
+  const { coinId } = useParams<RouteParams>();
+  const { state } = useLocation<RouteState>();
+  return (
+    <Container>
+      <Header>
+        <Title>{state?.name || "Loading..."}</Title>
+      </Header>
+      {loading ? <Loader>Loading...</Loader> : null}
+    </Container>
+  );
+}
+export default Coin;
+```
+
+- State is created when you are in Coins screen (home)
+- When you go somewhere, the state is sent from home to another screen. 
+- It gives an error in the incognito mode because the name is undefined. 
+- If somebody comes directly to the second page because it requires home > second page to retrieve the name from the state.
+
+# 4.5 setState 
+
+- When people click the coin, you want to show the data. 
+- When you look at the coin website. 
+- URL: `https://api.coinpaprika.com/v1/coins/{coinID}
+- URL: 'https://api.coinpaprika.com/v1/tickers/
+- In the usereffect() function, you call the API and get ready to present data.
+```js
+import { useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router";
+import styled from "styled-components";
+
+  function Coin() {
+  const [loading, setLoading] = useState(true);
+  const { coinId } = useParams<RouteParams>();
+  const { state } = useLocation<RouteState>();
+  const [info, setInfo] = useState({});
+  const [priceInfo, setPriceInfo] = useState({});
+  useEffect(() => {
+    (async () => {
+      const infoData = await (
+        await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
+      ).json();
+      const priceData = await (
+        await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
+      ).json();
+      setInfo(infoData);
+      setPriceInfo(priceData);
+    })();
+  }, []);
+  return (
+    <Container>
+      <Header>
+        <Title>{state?.name || "Loading..."}</Title>
+      </Header>
+      {loading ? <Loader>Loading...</Loader> : null}
+    </Container>
+  );
+}
+export default Coin;
+```
+
+# 4.6 Data Types
+
+- you have to explain.
+```
+interface IInfoData {
+
+}
+interface PriceData {
+
+}
+```
+
+*Tip: On the console, after you get data from API, you can store it to a global variable.*
+
+*On TypeScript you have to specify data that you want to get in the interface*
+
+Object.keys(temp1).join()
+
+'id,name,symbol,rank,is_new,is_active,type,contract,platform,contracts,parent,tags,team,description,message,open_source,started_at,development_status,hardware_wallet,proof_type,org_structure,hash_algorithm,links,links_extended,whitepaper,first_data_at,last_data_at'
+
+- if you want to select all the comma, 
+1. Select comma
+2. press control D until the end.
+
+Result:
+id:
+name:
+symbol:
+rank:
+is_new:
+is_active:
+type:
+contract:
+platform:
+contracts:
+parent:
+tags:
+team:
+description:
+message:
+open_source:
+started_at:
+development_status:
+hardware_wallet:
+proof_type:
+org_structure:
+hash_algorithm:
+links:
+links_extended:
+whitepaper:
+first_data_at:
+last_data_at
+
+3. When each word is seperated by a comma, you use control shift L
+(It doesn't work now)
+4. Paste the type of everything.
+Objects.value()
+5. Do the same for temp 2
+
+# 4.7 Nested Routes 
+
+- Now that we have data, we can paint the data in the detail Coin page. 
+
+- Write the CSS part
+
+```js
+const Overview = styled.div`
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px 20px;
+  border-radius: 10px;
+`;
+const OverviewItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  span:first-child {
+    font-size: 10px;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+`;
+const Description = styled.p`
+  margin: 20px 0px;
+`;
+
+interface PriceData {
+  id: string;
+  name: string;
+	function Coin() {
+      ).json();
+      setInfo(infoData);
+      setPriceInfo(priceData);
+      setLoading(false);
+    })();
+  }, [coinId]);
+  return (
+    <Container>
+      <Header>
+        <Title>
+          {state?.name ? state.name : loading ? "Loading..." : info?.name}
+        </Title>
+      </Header>
+      {loading ? (
+        <Loader>Loading...</Loader>
+      ) : (
+        <>
+          <Overview>
+            <OverviewItem>
+              <span>Rank:</span>
+              <span>{info?.rank}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>Symbol:</span>
+              <span>${info?.symbol}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>Open Source:</span>
+              <span>{info?.open_source ? "Yes" : "No"}</span>
+            </OverviewItem>
+          </Overview>
+          <Description>{info?.description}</Description>
+          <Overview>
+            <OverviewItem>
+              <span>Total Suply:</span>
+              <span>{priceInfo?.total_supply}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>Max Supply:</span>
+              <span>{priceInfo?.max_supply}</span>
+            </OverviewItem>
+          </Overview>
+          <Switch>
+            <Route path={`/${coinId}/price`}>
+              <Price />
+            </Route>
+            <Route path={`/${coinId}/chart`}>
+              <Chart />
+            </Route>
+          </Switch>
+        </>
+      )}
+    </Container>
+  );
+}
+```
+
+- Then, we write a more detailed page that shows the price and the chart.
+- In order to do this, make two more files in the route
+
+1. src/routes/chart.tsx
+2. src/routes/Price.tsx
+
+- Use nested route and the information to the next route will show below the previous route.
+
+*How do you build tabs?*
+
+- Since there are routes already, tabs are going to be link. We do not have to do onClick.
+```js
+// Using Link you can easily create a link switch.
+<Link to="">
+```
+
+- We can do more CSS to make the button pretty and figure out ways to communicate with the user. 
+- useRouteMatch - tells where the users are in a specific URL. 
+- 
+```
+const priceMatch = useRouteMatch("/:coinID/price");
+```
+- Tab is going to have the prop that is called isActive: boolean
+- Tab: your tab is acteive if you say by setting up isActive variable inside the <Tab>, you can create the chart or price depending on which one to choose. 
+
+# 4.9 React Query part 
+
+- We can save lots of code by changing user state into React Query. 
+- Configure react query
+```
+npm i react-query
+```
+- Quickstart
+
+1. Create query client
+2. Create a provider pattern. 
+
+- everybody inside the <QueryClientProvider> will have access to the queryClient
+
+```tsx
+ReactDOM.render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
+    </QueryClientProvider>
+  </React.StrictMode>,
+  document.getElementById("root")
+);
+```
+
+- React Query will abstract all the logics that we implemented by ourselves. 
+
+- For example, we have state for coin and loading. When the data is ready, we put the loading true or false depending on how we receive data. 
+
+```ts
+  const [coins, setCoins] = useState<CoinInterface[]>([]);
+  const [loading, setLoading] = useState(true);
+```
+
+- you have to create a fetcher function. return the fetched promise. 
+- Promise - async function - 
+
+*Basically, it is getting the fetch part seperately using the fetch fucntion.*
+
+useQuery hook > calls fetcher function > loading - put in isLoading > Once fetch function finish put the data into the second argument. 
+
+Code reduction:
+
+
+Before:
+
+```ts
+function Coins() {
+  const [coins, setCoins] = useState<CoinInterface[]>([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    (async () => {
+      const response = await fetch("https://api.coinpaprika.com/v1/coins");
+      const json = await response.json();
+      setCoins(json.slice(0, 100));
+      setLoading(false);
+    })();
+  }, []);
+```
+
+After:
+```ts
+  const { isLoading, data } = useQuery<ICoin[]>("allCoins", fetchCoins);
+```
+
+- React Query hook use fetcher function and put the data after it is loaded. 
+
+- every time you go the page, you see the loading..., it means every time we are going, we are hitting the API. Everytime, we come back fromthe bitcoin screen, we are not seeing the loading. 
+
+- React Query is caching the response. 
+
+- Dev Tool - you can see what is in the cache.
+  - you can use this to the query and the cache that is stored. 
+  - It is very easy way to visulize your query and cache. 
+```js
+import { ReactQueryDevtools } from "react-query/devtools";
+      <ReactQueryDevtools initialIsOpen={true} />
+```
+
+- Good to break the API URL into two using the BASE_URL. 
+
+Break API into seperate functions
+
+```js
+const BASE_URL = `https://api.coinpaprika.com/v1`;
+
+export function fetchCoins() {
+  return fetch(`${BASE_URL}/coins`).then((response) => response.json());
+}
+
+export function fetchCoinInfo(coinId: string) {
+  return fetch(`${BASE_URL}/coins/${coinId}`).then((response) =>
+    response.json()
+  );
+}
+
+export function fetchCoinTickers(coinId: string) {
+  return fetch(`${BASE_URL}/tickers/${coinId}`).then((response) =>
+    response.json()
+  );
+}
+
+```
+
+React Query demands differnt key for API function. 
+- All the query needs to have a unique ID. 
+- If you use two seperate useQuery, it will create two different unique IDs. 
+- since loading should have different names too you can change them to infoLoading and tickersLoading.
+
+# Recap
+
+*What is react query and why should i use it?*
+- it allows you to create a fetcher function and going to notify you whether the data is fetched or not.
+- React Query has a very powerful caching mechanism. 
+
+
+
+*How do you use React Query Developer tool?*
+
+1. Import in app.tsx
+
+```tsx
+import { ReactQueryDevtools } from "react-query/devtools";
+function App() {
+  return (
+    <>
+      <GlobalStyle />
+      <Router />
+      <ReactQueryDevtools initialIsOpen={true} />
+    </>
+  );
+}
+```
+
+*How do you use React Query?*
+
+1. Import in index.tsx and apply globally.
+
+```tsx
+import { QueryClient, QueryClientProvider } from "react-query";
+ReactDOM.render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
+    </QueryClientProvider>
+  </React.StrictMode>,
+  document.getElementById("root")
+);
+```
+
+2. Create an api.ts that has fetcher functions
+
+```js
+const BASE_URL = `https://api.coinpaprika.com/v1`;
+
+export function fetchCoins() {
+  return fetch(`${BASE_URL}/coins`).then((response) => response.json());
+}
+
+export function fetchCoinInfo(coinId: string) {
+  return fetch(`${BASE_URL}/coins/${coinId}`).then((response) =>
+    response.json()
+  );
+}
+
+export function fetchCoinTickers(coinId: string) {
+  return fetch(`${BASE_URL}/tickers/${coinId}`).then((response) =>
+    response.json()
+  );
+}
+```
+
+3. Use ReactQuery
+
+```js
+import { useQuery } from "react-query";
+import { fetchCoinInfo, fetchCoinTickers } from "../api";
+
+
+  const { isLoading: infoLoading, data: infoData } = useQuery<InfoData>(
+    ["info", coinId],
+    () => fetchCoinInfo(coinId)
+  );
+  const { isLoading: tickersLoading, data: tickersData } = useQuery<PriceData>(
+    ["tickers", coinId],
+    () => fetchCoinTickers(coinId)
+  );
+```
+
+
+# 4.12 Price Chart
+
+- Get the parameter from the router. 
+- Coin screen is what is rendering form the chart. 
+- There is no need to get it from the parameter becaues the coin screen has . 
+- Using coinID, you can get the historical data of crypto currency. 
+- Create the fetch function in the api.tsx.
+- There is a parameter to getting the historical data from and to . 
+
+Steps:
+1. Create api.tsx
+2. Take the coinID from the Coin.tsx.
+2. useQuery to retrieve historical data form Chart.tsx
+3. render <Chart> from the coin screen. 
+
+# 4.13 Price Chart from Apexcharts.js
+
+- you can create many chart using Apenxcharts. 
+- There are a lot of documentation. You can build almost any charts that you want to use. 
+
+*How do you install?*
+
+- Refer to the documentation of the apexchart.
+```
+npm install --save react-apexcharts apexcharts
+```
+
+Steps:
+
+1. Create an interface of the Historical crypto data. 
+2. import ApexChart.
+3. You can change many props in the ApexChart
+  - fill: gradient
+  - colors
+  - tooltip: when you pot your mouse on top. 
+4. Best way of learning ApexChart is to look at demos and see how they structured.
+
+- Price can be made realtime
+- You can change the **react helmet** to change the tab text. 
+- You can put the head of the document <Helmet><Title>
+
+# 5.0 Dark mode
+
+- you can create a toggle swtich that changes the theme. 
+- If you want to send the  
+
+- Two diff component and two different that need access. That is able to modify the state. 
+
+- global state is the state that is shared throughout the whole application. 
+  - use loggedIn could be a global state because you might want to show different page based on their login status. 
+
+w/o state management:
+isDark: App -> Router -> Coin -> Chart
+
+(isDark) - global they could get it if they want to. 
+<- chart
+
+
+
