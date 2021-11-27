@@ -1230,4 +1230,315 @@ isDark: App -> Router -> Coin -> Chart
 <- chart
 
 
+# 5.1 Recoil
+
+- State management can fix the problem of routes. 
+- We have a traveling prop called isDark. 
+- Instead, you can put the isDark value in the bubble. This value will be kept throughout the change of states. 
+- You have to route isDark prop to pages where it is needed. 
+- Recoil is the one that allows us to do something. 
+- Recoil is really easy to understand. 
+- Please watch the video - 
+- Recoil - we create different atom. In the atom, you can save whatever props that you want. 
+- If you have components that want information from the atom, you connect the component directly to the atom. 
+
+- Check out the informative website:
+https://www.youtube.com/watch?v=_ISAA_Jt9kI&ab_channel=ReactEurope
+
+
+
+*How do you use recoil?*
+
+Install package with npm:
+```shell
+npm install recoil
+```
+*Please refer to the official documentation*
+
+**
+
+- Learn how to connect component to atom. 
+
+
+# 5.3 
+
+- To modify the value of the atom, you can use setter function (setterFn) to send value to the ateom. 
+```js
+import { useSetRecoilState } from "recoil";
+import { isDarkAtom } from "../atoms";
+function Coins() {
+  const setDarkAtom = useSetRecoilState(isDarkAtom);
+  const toggleDarkAtom = () => setDarkAtom((prev) => !prev);
+  const { isLoading, data } = useQuery<ICoin[]>("allCoins", fetchCoins);
+  return (
+    <Container>
+      </Helmet>
+      <Header>
+        <Title>코인</Title>
+        <button onClick={toggleDarkAtom}>Toggle Mode</button>
+      </Header>
+      {isLoading ? (
+        <Loader>Loading...</Loader>
+
+      .....
+```
+
+# 5.4 Recap:
+
+- Atom makes the code simple.
+- Problem: traveling props. 
+- Sometimes unnecessary props traveled through the components. 
+- Instead of having traveling props, we created atom. 
+- atom is the piece of state that we can do 
+  - get the value from the props and listen to atom.
+  - modify the atom. 
+
+- Get the value: useRecoilValue(<Atom name>)
+```js
+// value from atom is received to the local state called isDark.
+const isDark = useRecoilValue(isDarkAtom);
+```
+- useSetRecoilState: set the value.
+```js
+// once you refer to the atem, you can use the modifier function to modify the value.
+const setDarkAtom = useStateRecoilState(isDarkAtom);
+// function as an argument
+const toggleDarkAtom = () => setDarkAtom ((prev) => !prev)
+// or setDarkAtom(false) - send modified value right away.
+
+```
+
+# 5.5 To Do set up
+
+- Create a ToDoList
+
+```js
+function ToDoList() {
+  const [toDo, setToDo] = useState("");
+  
+  // onChange event handler for inputs.
+  const onChange = (event: React.FormEvent<HTMLInputElement>) => {
+    const {
+      currentTarget: { value },
+    } = event;
+    setToDo(value);
+  };
+
+  // onSubmit event handler for form.
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log(toDo);
+  };
+  return (
+    <div>
+      <form onSubmit={onSubmit}>
+        <input onChange={onChange} value={toDo} placeholder="Write a to do" />
+        <button>Add</button>
+      </form>
+    </div>
+  );
+}
+```
+
+# 5.6 React Hook Form
+
+- React Hook form can help make all event handlers into one line of code. 
+- React Hook form is best way to work on forms.
+
+- If toDo list characters are shorter than 10, we want to display an error. 
+- If you want data from the user, we have to write a form and come up with the validation. It is not complex but it takes many steps to implements them.
+
+- use readt-hook-form
+
+- Installation
+```
+react-hook-form.
+```
+
+- useForm() function with the register will do everything for you. 
+  1. onChange event handler + prop of onChange + setStates for free.
+
+
+Before:
+```js
+/* function ToDoList() {
+  const [toDo, setToDo] = useState("");
+  const [toDoError, setToDoError] = useState("");
+  const onChange = (event: React.FormEvent<HTMLInputElement>) => {
+    const {
+      currentTarget: { value },
+    } = event;
+    setToDoError("");
+    setToDo(value);
+  };
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (toDo.length < 10) {
+      return setToDoError("To do should be longer");
+    }
+    console.log("submit");
+  };
+  return (
+    <div>
+      <form onSubmit={onSubmit}>
+        <input onChange={onChange} value={toDo} placeholder="Write a to do" />
+        <button>Add</button>
+        {toDoError !== "" ? toDoError : null}
+      </form>
+    </div>
+  );
+} */
+```
+
+After:
+```js
+import { useForm } from "react-hook-form";
+function ToDoList() {
+  // register will register and watch will watch the value on your form.
+  // console.log(watch()); This is going to watch all the value on my form. IT will print the values as users enter data.
+  const { register, watch } = useForm();
+  console.log(watch());
+  return (
+    <div>
+    {/*By doing this we are registering all the input in the register state.*/}
+      <form>
+        <input {...register("email")} placeholder="Email" />
+        <input {...register("firstName")} placeholder="First Name" />
+        <input {...register("lastName")} placeholder="Last Name" />
+        <input {...register("username")} placeholder="Username" />
+        <input {...register("password")} placeholder="Password" />
+        <input {...register("password1")} placeholder="Password1" />
+        <button>Add</button>
+      </form>
+    </div>
+  );
+```
+
+- It saves you a lot of time because all the data you receive will be registered as an object. 
+
+# 5.7 Form Validataion
+
+- using userForm() function you can just import handleSubmit to perform the validation. 
+
+- onValid() will check after all the form data has been submitted. 
+
+
+```js
+<form
+    style={{ display: "flex", flexDirection: "column" }}
+    onSubmit={handleSubmit(onValid)}
+  >
+```
+
+- HTML protection of required is not enough because the user can change the source code and submit a form. 
+
+Using React-form to require an input.
+```js
+<input {...register("email", { required: true })} placeholder="Email" />
+```
+
+Set the minimum length:
+```js
+<input
+  {...register("username", { required: true, minLength: 10 })}
+  placeholder="Username"
+/>
+```
+
+- formState:
+
+- formState.error -> will show the error. 
+- shows on the console what errors are. It does the error-handing.;
+
+YOu can pass on the error message if you want. 
+
+```js
+<input
+  {...register("password1", {
+    required: "Password is required",
+    minLength: {
+      value: 5,
+      message: "Your password is too short.",
+    },
+  })}
+  placeholder="Password1"
+/>
+```
+
+# 5.8 Form Errors
+
+- To validate data, you can use regular expression. It is basically setting up criteria.
+
+- ex:[^A-Za-z0-9.+%+-]
+
+-*Please use regex101.com to check your reg ex.*
+
+- you write the reg ex in the pattern as below
+
+```js
+{...register("email", {
+    required: "Email is required",
+    pattern: {
+      value: /^[A-Za-z0-9._%+-]+@naver.com$/,
+      message: "Only naver.com emails allowed",
+    },
+  })}
+```
+
+Steps:
+
+1. import useForm from react-hook-form
+2. create an input and ...register data.
+3. set up required ot not validation
+4. set up pattern > value, message 
+5. Show error to the user 
+```js
+<span>{error?email?.message}</span>
+```
+
+Final code:
+```js
+<form
+  style={{ display: "flex", flexDirection: "column" }}
+  onSubmit={handleSubmit(onValid)}
+>
+  <input
+    {...register("email", {
+      required: "Email is required",
+      pattern: {
+        value: /^[A-Za-z0-9._%+-]+@naver.com$/,
+        message: "Only naver.com emails allowed",
+      },
+    })}
+    placeholder="Email"
+  />
+  <span>{errors?.email?.message}</span>
+```
+
+# 5.9 Custom Validation
+
+*How do you trigger an error*
+
+- Validation on your error is useful because you can check on DB for further information. 
+- You want to check whether the user has put the correct password or not. 
+
+
+*send an error when password1 and password2 (confirmation) are not same*
+
+- use setError() function. 
+```js
+const onValid = (data: IForm) => {
+if (data.password !== data.password1) {
+  setError(
+    "password1",
+    { message: "Password are not the same" },
+    // the form is going to focus on the first form. 
+    { shouldFocus: true }
+  );
+}
+```
+
+- Validation could be an object with many functions. 
+
+
 
